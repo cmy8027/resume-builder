@@ -295,6 +295,8 @@ const { store, hasAnyContent, lineOneMeta, lineTwoMeta, lineThreeMeta, moduleOrd
 
 .resume-section {
   margin-bottom: 6px;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .resume-section:last-of-type {
@@ -311,6 +313,8 @@ const { store, hasAnyContent, lineOneMeta, lineTwoMeta, lineThreeMeta, moduleOrd
   color: #3b65f6;
   background: transparent;
   border-bottom: 1px solid #3b65f6;
+  break-after: avoid;
+  page-break-after: avoid;
 }
 
 .entry {
@@ -321,6 +325,8 @@ const { store, hasAnyContent, lineOneMeta, lineTwoMeta, lineThreeMeta, moduleOrd
   background: white;
   box-shadow: 0 1px 2px rgba(59, 101, 246, 0.08);
   transition: all 0.2s ease;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .entry:last-child {

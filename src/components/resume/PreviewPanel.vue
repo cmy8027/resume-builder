@@ -88,11 +88,31 @@ function updatePageBreaks() {
   if (!resumeRef.value) return
   const contentHeight = resumeRef.value.scrollHeight
   const pageHeight = Math.round((resumeRef.value.clientWidth || A4_WIDTH) * A4_RATIO)
+  if (pageHeight <= 0) return
+
   const breaks: number[] = []
-  const totalPages = Math.max(1, Math.ceil((contentHeight - 1) / pageHeight))
-  for (let i = 1; i < totalPages; i += 1) {
-    breaks.push(Math.round(i * pageHeight))
+  const maxGap = pageHeight * 0.15
+  const avoidElements = resumeRef.value.querySelectorAll('.entry, .section-title, .resume-header')
+  let currentBreak = pageHeight
+
+  while (currentBreak < contentHeight) {
+    let adjustedBreak = currentBreak
+
+    for (const el of avoidElements) {
+      const rect = el.getBoundingClientRect()
+      const containerRect = resumeRef.value!.getBoundingClientRect()
+      const elTop = rect.top - containerRect.top
+      const elBottom = elTop + rect.height
+
+      if (elTop < adjustedBreak && elBottom > adjustedBreak && elTop > adjustedBreak - maxGap) {
+        adjustedBreak = Math.max(Math.round(elTop - 4), breaks.length > 0 ? breaks[breaks.length - 1]! + 100 : 100)
+      }
+    }
+
+    breaks.push(adjustedBreak)
+    currentBreak = adjustedBreak + pageHeight
   }
+
   pageBreaks.value = breaks
 }
 
@@ -245,13 +265,41 @@ async function exportPDF(mode: ExportQualityMode) {
 
     const pagePixelHeight = Math.round(canvas.width * A4_RATIO)
     const effectiveHeight = findEffectiveCanvasHeight(canvas)
-    const totalPages = Math.max(1, Math.ceil(effectiveHeight / pagePixelHeight))
+
+    // 计算智能分页点：避免在元素中间切割
+    const safeBreaks: number[] = []
+    const avoidElements = exportNode.querySelectorAll('.entry, .section-title, .resume-header')
+    const maxGap = pagePixelHeight * 0.15
+    let currentBreak = pagePixelHeight
+
+    while (currentBreak < effectiveHeight - 1) {
+      let adjustedBreak = currentBreak
+
+      for (const el of avoidElements) {
+        const rect = el.getBoundingClientRect()
+        const containerRect = exportNode.getBoundingClientRect()
+        const elTopPx = rect.top - containerRect.top
+        const elBottomPx = elTopPx + rect.height
+        const elTop = Math.round(elTopPx * exportScale)
+        const elBottom = Math.round(elBottomPx * exportScale)
+        const prevBreak = safeBreaks.length > 0 ? safeBreaks[safeBreaks.length - 1]! : 0
+
+        if (elTop < adjustedBreak && elBottom > adjustedBreak && elTop > adjustedBreak - maxGap && elTop > prevBreak + 50) {
+          adjustedBreak = Math.round(elTop - 4 * exportScale)
+        }
+      }
+
+      safeBreaks.push(adjustedBreak)
+      currentBreak = adjustedBreak + pagePixelHeight
+    }
+
+    const totalPages = safeBreaks.length + 1
     let offsetY = 0
     let pageIndex = 0
 
-    while (offsetY < effectiveHeight - 1) {
-      const remainingHeight = effectiveHeight - offsetY
-      const sliceHeight = Math.min(pagePixelHeight, remainingHeight)
+    for (let i = 0; i <= safeBreaks.length; i++) {
+      const nextBreak = i < safeBreaks.length ? safeBreaks[i]! : effectiveHeight
+      const sliceHeight = nextBreak - offsetY
       if (sliceHeight <= 2) break
 
       const pageCanvas = document.createElement('canvas')
@@ -274,7 +322,7 @@ async function exportPDF(mode: ExportQualityMode) {
       const pageProgress = 68 + Math.round((Math.min(pageIndex + 1, totalPages) / totalPages) * 28)
       await setExportProgress(pageProgress, `正在写入第 ${Math.min(pageIndex + 1, totalPages)}/${totalPages} 页...`)
 
-      offsetY += sliceHeight
+      offsetY = nextBreak
       pageIndex += 1
     }
 

@@ -298,6 +298,8 @@ const { store, hasAnyContent, lineOneMeta, lineTwoMeta, lineThreeMeta, moduleOrd
 
 .resume-section {
   margin-bottom: 12px;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .resume-section:last-of-type {
@@ -315,6 +317,8 @@ const { store, hasAnyContent, lineOneMeta, lineTwoMeta, lineThreeMeta, moduleOrd
   color: #4d76e1;
   background: linear-gradient(90deg, #e9eefb 0%, rgba(233, 238, 251, 0.3) 100%);
   border-radius: 2px;
+  break-after: avoid;
+  page-break-after: avoid;
 }
 
 .section-title::before {
@@ -336,6 +340,8 @@ const { store, hasAnyContent, lineOneMeta, lineTwoMeta, lineThreeMeta, moduleOrd
   background: white;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .entry:last-child {
