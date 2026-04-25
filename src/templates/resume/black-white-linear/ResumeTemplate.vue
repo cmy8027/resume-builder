@@ -114,6 +114,14 @@ const extraLinks = computed(() => {
         <p v-if="project.link" class="entry-link-row">
           <a class="entry-link" :href="project.link" target="_blank" rel="noopener noreferrer">{{ project.link }}</a>
         </p>
+        <div v-if="project.techStack" class="tech-stack-row">
+          <span
+            v-for="(tech, idx) in project.techStack.split(/[,，]+/).filter(t => t.trim())"
+            :key="idx"
+            class="tech-tag"
+            :style="{ fontSize: (project.techStackStyle?.fontSize || 12) + 'px', color: project.techStackStyle?.color || '#333' }"
+          >{{ tech.trim() }}</span>
+        </div>
         <div v-if="project.introduction">
           <p class="project-block-title">项目介绍</p>
           <div class="entry-rich" v-html="project.introduction"></div>
@@ -340,6 +348,25 @@ const extraLinks = computed(() => {
   color: #2d2d2d;
   text-decoration: underline;
   font-size: 13px;
+}
+
+.tech-stack-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.tech-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  background: #f0f0f0;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
 }
 
 .project-block-title {

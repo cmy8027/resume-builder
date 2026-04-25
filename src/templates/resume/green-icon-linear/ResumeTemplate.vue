@@ -254,6 +254,14 @@ function projectHref(link: string): string {
             <p v-if="project.link" class="entry-link-row">
               <a class="entry-link" :href="projectHref(project.link)" target="_blank" rel="noopener noreferrer">{{ project.link }}</a>
             </p>
+            <div v-if="project.techStack" class="tech-stack-row">
+              <span
+                v-for="(tech, idx) in project.techStack.split(/[,，]+/).filter(t => t.trim())"
+                :key="idx"
+                class="tech-tag"
+                :style="{ fontSize: (project.techStackStyle?.fontSize || 12) + 'px', color: project.techStackStyle?.color || '#198e89' }"
+              >{{ tech.trim() }}</span>
+            </div>
             <div v-if="project.introduction">
               <p class="project-block-title">项目介绍</p>
               <div class="entry-rich" v-html="project.introduction"></div>
@@ -575,6 +583,25 @@ function projectHref(link: string): string {
 
 .entry-link:hover {
   text-decoration: underline;
+}
+
+.tech-stack-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.tech-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  background: linear-gradient(135deg, #e6f7f6 0%, #d1f0ee 100%);
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
 }
 
 .entry-rich {

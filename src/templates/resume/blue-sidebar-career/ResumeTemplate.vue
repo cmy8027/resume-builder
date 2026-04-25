@@ -136,6 +136,14 @@ function subLine(values: Array<string | undefined>): string {
           <p v-if="project.link" class="entry-link-row">
             <a class="entry-link" :href="project.link" target="_blank" rel="noopener noreferrer">{{ project.link }}</a>
           </p>
+          <div v-if="project.techStack" class="tech-stack-row">
+            <span
+              v-for="(tech, idx) in project.techStack.split(/[,，]+/).filter(t => t.trim())"
+              :key="idx"
+              class="tech-tag"
+              :style="{ fontSize: (project.techStackStyle?.fontSize || 12) + 'px', color: project.techStackStyle?.color || '#1f73d9' }"
+            >{{ tech.trim() }}</span>
+          </div>
           <div v-if="project.introduction" class="entry-rich" v-html="project.introduction"></div>
           <div v-if="project.mainWork" class="entry-rich" v-html="project.mainWork"></div>
         </article>
@@ -387,6 +395,25 @@ function subLine(values: Array<string | undefined>): string {
 
 .entry-link:hover {
   text-decoration: underline;
+}
+
+.tech-stack-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.tech-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  background: linear-gradient(135deg, #e8f1ff 0%, #d4e4ff 100%);
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
 }
 
 .entry-rich {
