@@ -6,6 +6,7 @@ import RichEditor from '@/components/common/RichEditor.vue'
 
 const store = useResumeStore()
 const collapsed = ref(false)
+const syncAllStyles = ref(false)
 
 // 确保每个项目都有 techStackStyle
 watch(() => store.projectList, (list) => {
@@ -18,6 +19,25 @@ watch(() => store.projectList, (list) => {
     }
   })
 }, { deep: true, immediate: true })
+
+function applyStyleToAll(source: typeof store.projectList[0]) {
+  if (!syncAllStyles.value || !source.techStackStyle) return
+  store.projectList.forEach(proj => {
+    if (proj.id !== source.id) {
+      proj.techStackStyle = { ...source.techStackStyle! }
+    }
+  })
+}
+
+// 勾选时立即同步第一个项目的样式到所有项目
+watch(syncAllStyles, (val) => {
+  if (val && store.projectList.length > 0) {
+    const first = store.projectList[0]
+    if (first?.techStackStyle) {
+      applyStyleToAll(first)
+    }
+  }
+})
 </script>
 
 <template>
@@ -95,17 +115,23 @@ watch(() => store.projectList, (list) => {
         </div>
 
         <div v-if="proj.techStack" class="tech-stack-config">
-          <label class="form-label">技术栈样式</label>
+          <div class="config-header">
+            <label class="form-label">技术栈样式</label>
+            <label v-if="index === 0" class="sync-label">
+              <input v-model="syncAllStyles" type="checkbox" class="sync-checkbox" />
+              <span>同步到所有项目</span>
+            </label>
+          </div>
           <div class="config-row">
             <div class="config-group">
               <span class="config-sublabel">字号：</span>
-              <input v-model.number="proj.techStackStyle.fontSize" type="number" class="config-number" min="8" max="20" step="1" />
+              <input v-model.number="proj.techStackStyle.fontSize" type="number" class="config-number" min="8" max="20" step="1" @input="applyStyleToAll(proj)" />
               <span class="config-unit">px</span>
             </div>
             <div class="config-group">
               <span class="config-sublabel">颜色：</span>
-              <input v-model="proj.techStackStyle.color" type="color" class="config-color" />
-              <input v-model="proj.techStackStyle.color" type="text" class="config-color-text" placeholder="#475569" />
+              <input v-model="proj.techStackStyle.color" type="color" class="config-color" @input="applyStyleToAll(proj)" />
+              <input v-model="proj.techStackStyle.color" type="text" class="config-color-text" placeholder="#475569" @input="applyStyleToAll(proj)" />
             </div>
           </div>
         </div>
@@ -365,6 +391,28 @@ watch(() => store.projectList, (list) => {
   background: white;
   border-radius: var(--radius-md);
   border: 1px solid var(--gray-200);
+}
+
+.config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+}
+
+.sync-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.sync-checkbox {
+  accent-color: var(--primary-500);
+  cursor: pointer;
 }
 
 .config-row {
