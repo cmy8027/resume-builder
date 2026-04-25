@@ -1,11 +1,23 @@
 ﻿<script setup lang="ts">
 import { useResumeStore } from '@/stores/resume'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import RichEditor from '@/components/common/RichEditor.vue'
 // author: jf
 
 const store = useResumeStore()
 const collapsed = ref(false)
+
+// 确保每个项目都有 techStackStyle
+watch(() => store.projectList, (list) => {
+  list.forEach(proj => {
+    if (!proj.techStackStyle) {
+      proj.techStackStyle = {
+        fontSize: 10,
+        color: '#475569'
+      }
+    }
+  })
+}, { deep: true, immediate: true })
 </script>
 
 <template>
@@ -75,6 +87,26 @@ const collapsed = ref(false)
           <div class="form-group span-2">
             <label class="form-label">项目链接</label>
             <input v-model="proj.link" type="text" class="form-input" placeholder="例如：https://www.example.com" />
+          </div>
+          <div class="form-group span-2">
+            <label class="form-label">技术栈</label>
+            <input v-model="proj.techStack" type="text" class="form-input" placeholder="例如：Spring Boot,MySQL,Redis（用逗号分隔）" />
+          </div>
+        </div>
+
+        <div v-if="proj.techStack" class="tech-stack-config">
+          <label class="form-label">技术栈样式</label>
+          <div class="config-row">
+            <div class="config-group">
+              <span class="config-sublabel">字号：</span>
+              <input v-model.number="proj.techStackStyle.fontSize" type="number" class="config-number" min="8" max="20" step="1" />
+              <span class="config-unit">px</span>
+            </div>
+            <div class="config-group">
+              <span class="config-sublabel">颜色：</span>
+              <input v-model="proj.techStackStyle.color" type="color" class="config-color" />
+              <input v-model="proj.techStackStyle.color" type="text" class="config-color-text" placeholder="#475569" />
+            </div>
           </div>
         </div>
 
@@ -326,4 +358,72 @@ const collapsed = ref(false)
   font-size: 1.1rem;
   font-weight: 700;
 }
+
+.tech-stack-config {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: white;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+}
+
+.config-row {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.config-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.config-sublabel {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.config-select {
+  padding: 4px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  background: white;
+  cursor: pointer;
+}
+
+.config-number {
+  width: 60px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.config-unit {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.config-color {
+  width: 40px;
+  height: 28px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.config-color-text {
+  width: 90px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-family: monospace;
+}
+
 </style>

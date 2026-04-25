@@ -76,6 +76,11 @@ export interface ProjectEntry {
   startDate: string
   endDate: string
   link: string
+  techStack: string
+  techStackStyle?: {
+    fontSize?: number
+    color?: string
+  }
   introduction: string
   mainWork: string
 }
@@ -201,6 +206,7 @@ export const useResumeStore = defineStore('resume', () => {
       startDate: '',
       endDate: '',
       link: '',
+      techStack: '',
       introduction: '',
       mainWork: '',
     },
@@ -333,6 +339,7 @@ export const useResumeStore = defineStore('resume', () => {
       startDate: '',
       endDate: '',
       link: '',
+      techStack: '',
       introduction: '',
       mainWork: '',
     })

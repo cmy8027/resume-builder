@@ -135,6 +135,16 @@ const { store, hasAnyContent, lineOneMeta, lineTwoMeta, lineThreeMeta, moduleOrd
           </svg>
           <a class="entry-link" :href="project.link" target="_blank" rel="noopener noreferrer">{{ project.link }}</a>
         </p>
+        <div v-if="project.techStack" class="tech-stack-row">
+          <span
+            v-for="(tech, idx) in project.techStack.split(/[,，]+/).filter(t => t.trim())"
+            :key="idx"
+            class="tech-tag"
+            :style="{ fontSize: (project.techStackStyle?.fontSize || 12) + 'px', color: project.techStackStyle?.color || '#3b65f6', borderColor: 'transparent' }"
+          >
+            {{ tech.trim() }}
+          </span>
+        </div>
         <div v-if="project.introduction" class="project-block">
           <p class="project-block-title">
             <svg class="block-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -422,6 +432,25 @@ const { store, hasAnyContent, lineOneMeta, lineTwoMeta, lineThreeMeta, moduleOrd
   flex-shrink: 0;
   width: 12px;
   height: 12px;
+}
+
+.tech-stack-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.tech-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%);
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
 }
 
 .entry-head {
